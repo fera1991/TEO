@@ -7,7 +7,7 @@ from Processors.IgnoreProcessor import IgnoreProcessor
 from Processors.OperatorProcessor import OperatorProcessor
 from TokenEnum import TokenEnum
 from TokenInfo import TokenInfo
-
+from Processors.SymbolTableProcessor import SymbolTableProcessor
 
 def build_processors_chain():
 
@@ -85,6 +85,8 @@ def build_processors_chain():
 
     return ignore_processor
 
+
+
 def load_code():
     fh = FileHandler()
     
@@ -97,6 +99,9 @@ def load_code():
 def main():
 
     print("ANALIZADOR LEXICO\n")
+
+    # Crear la tabla de símbolos
+    symbol_table_processor = SymbolTableProcessor()
     
     codeString = load_code()
     processor_chain = build_processors_chain()
@@ -113,6 +118,9 @@ def main():
         token_info: TokenInfo = processor_chain.analize(codeString, position)
         token_list.append( token_info)
         position = token_info.get_final_position() + 1
+        
+        # Procesar el token y añadirlo a la tabla de símbolos
+        symbol_table_processor.process_token(token_info.get_token().name, token_info.get_value())
             
     
     print("\nLista de tokens generados:\n")
@@ -121,6 +129,10 @@ def main():
         token.print()
         print("------------------------------------------------------------------------")
     print("\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\\")
+
+    # Imprimir la tabla de símbolos
+    symbol_table_processor.print_symbol_table()
+
 
 if __name__ == '__main__':
     main()

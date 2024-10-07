@@ -30,6 +30,9 @@ class TokenInfo:
     def get_symbol(self) -> str:
         return self.__token.value # El simbolo sera el mismo valor del operador
     
+    def get_value(self) -> str:
+        return self.__value
+    
     def print(self):
         print("\nToken: " + self.__token.name)
         print("Valor: " + str(self.__value))
