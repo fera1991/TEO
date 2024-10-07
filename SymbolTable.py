@@ -6,11 +6,7 @@ class SymbolTable:
         self.scope_counter = 0  # Contador para gestionar el ámbito (nivel de anidación)
         self.current_scope = 'global'  # Definir el ámbito inicial como 'global'
 
-    def process_token(self, token_type, token_value):
-        """
-        Procesa un token y lo añade a la tabla de símbolos. 
-        Si se encuentra con un cambio de bloque ({ o }), actualiza el ámbito.
-        """
+    def process_token(self, token_type, token_value, token_initial_position, token_final_position):
         # Si se encuentra una llave de apertura, se entra en un nuevo ámbito
         if token_value == '{':
             if self.scope_counter == 0:
@@ -31,6 +27,8 @@ class SymbolTable:
         self.symbol_table[current_id] = {
             'tipo': token_type,          # Tipo de token (e.g., palabra clave, identificador)
             'ambito': self.current_scope, # Ámbito del símbolo
+            'posicion_inicial': token_initial_position, # Posicion inicial del símbolo
+            'posicion_final': token_final_position, # Posicion final del símbolo
             'valor': token_value          # Valor asociado al token
         }
 
@@ -40,9 +38,10 @@ class SymbolTable:
 
     def print_symbol_table(self):
         print("\nTabla de Símbolos:")
-        print(f"{'ID':<5} {'Tipo':<20} {'Ámbito':<10} {'Valor'}")
-        print("=" * 55)  # Línea de separación
+        print(f"{'ID':<5} {'Tipo':<20} {'Ámbito':<10} {'Inicio':<8} {'Fin':<8}  {'Valor'}")
+        print("=" * 65)  # Línea de separación
         
         for symbol_id, symbol_data in self.symbol_table.items():
-            print(f"{symbol_id:<5} {symbol_data['tipo']:<20} {symbol_data['ambito']:<10} {symbol_data['valor']}")
+            print(f"{symbol_id:<5} {symbol_data['tipo']:<20} {symbol_data['ambito']:<10} {symbol_data['posicion_inicial']:<8} {symbol_data['posicion_final']:<8} {symbol_data['valor']}")
+        print("=" * 65)  # Línea de separación
        
