@@ -1,4 +1,4 @@
-class SymbolTableProcessor:
+class SymbolTable:
     def __init__(self):
         # Inicializar la tabla de símbolos y las variables necesarias para su gestión
         self.symbol_table = {}
