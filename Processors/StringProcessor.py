@@ -45,7 +45,7 @@ class StringProcessor(BaseTokenProcessor):
                 break
             
             if(self.__is_false_next_line(code[i:])):
-                i+=2 # Si  es //n, saltar 2 adicional para no confundir con /n en la siguiente iteracion
+                i+=1 # Si  es //n, saltar 1 adicional para no confundir con /n en la siguiente iteracion
 
         
         while double_quote_flag:
@@ -59,7 +59,7 @@ class StringProcessor(BaseTokenProcessor):
                 break # Si ya encontro la otra comilla salir del bucle
             
             if(self.__is_false_next_line(code[i:])):
-                i+=2 # Si  es //n, saltar 2 adicional para no confundir con /n en la siquiente iteracion
+                i+=1 # Si  es //n, saltar 1 adicional para no confundir con /n en la siquiente iteracion
             
         if incomplete_string: # si paro por salto de linea, retornar token invalido
             return TokenInfo( TokenEnum.INVALID_TOKEN, position, i, code[position:i])
