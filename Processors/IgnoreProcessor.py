@@ -5,7 +5,7 @@ import re
 class IgnoreProcessor(BaseTokenProcessor):
         
     def __is_blank(self, word: str) -> bool:
-        return re.match(r'^\s.', word)
+        return re.match(r'^\s.*', word)
     
     def __line_comment(self, word: str) -> bool:
         return re.match(r'^\/\/.*', word)
