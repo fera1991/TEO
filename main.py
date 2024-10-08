@@ -116,11 +116,13 @@ def main():
     print("Generando tokens ...")
     while position < len(codeString):
         token_info: TokenInfo = processor_chain.analize(codeString, position)
-        token_list.append( token_info)
-        position = token_info.get_final_position() + 1
-        
-        # Procesar el token y añadirlo a la tabla de símbolos
-        symbol_table.process_token(token_info.get_token().name, token_info.get_value(), token_info.get_initial_position(), token_info.get_final_position())
+
+        if(token_info is not None):
+            token_list.append( token_info)
+            position = token_info.get_final_position() + 1
+            
+            # Procesar el token y añadirlo a la tabla de símbolos
+            symbol_table.process_token(token_info.get_token().name, token_info.get_value(), token_info.get_initial_position(), token_info.get_final_position())
             
     
     print("\nLista de tokens generados:\n")

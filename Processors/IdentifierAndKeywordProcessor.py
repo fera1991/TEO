@@ -22,7 +22,7 @@ class IdentifierAndKeywordProcessor(BaseTokenProcessor):
 
     def analize(self, code: str, position: int) -> TokenInfo:
         buffer: str = ""
-        r = re.compile(r'^(_|[aA-zZ])\w*$')
+        r = re.compile(r'^(?!.*\n)(_|[aA-zZ])\w*$')
         i=position
 
         while(i < len(code) and r.match(buffer +code[i]) ):

@@ -11,7 +11,7 @@ class NumberProcessor(BaseTokenProcessor):
 
     def analize(self, code: str, position: int) -> TokenInfo:
         buffer: str = ""        
-        r = re.compile(r'^\d+(\.\d*)?$')
+        r = re.compile(r'^(?!.*\n)\d+(\.\d*)?$')
 
         i=position
 

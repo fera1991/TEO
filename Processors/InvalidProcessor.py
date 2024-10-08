@@ -14,7 +14,9 @@ class InvalidProcessor(BaseTokenProcessor):
 
     def analize(self, code: str, position: int) -> str:
         i = position # Posicion actual al entrar
-        
+
+        if i>= len(code):
+            return None
         while not self.__is_blank(code[position:i+1]) and i < len(code): # Continuar hasta espacio o salto de linea 
             i+=1 
     

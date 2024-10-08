@@ -1,6 +1,9 @@
 from Processors.BaseVerification import BaseTokenProcessor
 import re
 
+from TokenEnum import TokenEnum
+from TokenInfo import TokenInfo
+
 #Ignora los espacios, saltos en linea y comentarios
 class IgnoreProcessor(BaseTokenProcessor):
         
@@ -36,8 +39,12 @@ class IgnoreProcessor(BaseTokenProcessor):
                     i+=1 
             
             if self.__comment_start(code[i:]): # En caso de comentario de bloque /*
+                j=i # Guardar posicion de /*
                 while(not self.__comment_end(code[i:]) and i<length): # Continuar hasta cierre de comentario de bloque */
-                    i+=1 
+                    i+=1
+                    if(i>= length): # Se llego al final sin encontrar el */
+                        match = re.match(r'^/\*[^\s]*', code[j:])
+                        return TokenInfo(TokenEnum.INVALID_TOKEN, j, match.end()+j, match.group(0)) # Si llego al final del codigo y no encontro */
                 i+=2 # Saltar */ al final
 
             

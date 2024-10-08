@@ -6,7 +6,8 @@ class TokenEnum(StrEnum):
     # Token identificador
     IDENTIFIER = "id"
     NUMERIC_CONSTANT = "num"
-    STRING = "string"
+    STRING_LITERAL = "string"
+    CHAR_LITERAL = "charzcter"
     INVALID_TOKEN = "invalid"
 
     # Palabras reservadas
