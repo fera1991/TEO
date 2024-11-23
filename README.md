@@ -9,64 +9,68 @@
 
 # Gramatica 
 ## Regla principal (inicio de programa)
-S => F S | B S | ε
-
-## Bloque de instrucciones
-B => D | A | E; | C | R | I | WH | ε
-
-## Declaración de Variables
-D => T V ;  
-T => int | char | float  
-V => id | V , id | V , id = E | id = E
-
-## Asignación de Variables
-A => id = E | id = C;
-
-## Expresiones Aritméticas
-E =>  
-    * E + E  
-    * E - E  
-    * E * E  
-    * E / E  
-    * ( E )  
-    * id  
-    * número
-
-## Expresiones Lógicas
-L =>  
-    * E == E  
-    * E > E  
-    * E < E  
+S → FN S
 
 ## Definición de funciones
-F =>  
-    * T id ( P )  
-    * void id ( P )  
-    * T id ( P ) { B }  
-    * void id ( P ) { B }
+FN   → TR id ( P ) FN’
+TR  → T | void
 
 ## Parámetros de función
-P =>  
-    * T id  
-    * P , T id  
-    * ε
+P  → T id P’ | ε
+P’ → , T id P’ | ε
+
+FN’ → ; | { B’ }
+
+B’ → B B' | ε
+
+
+## Bloque de instrucciones
+B → D | ID | R | I | WH | SW 
+
+## Declaración de Variables
+D  → T V ; 
+T  → int | char | float
+V  → id A’ V′
+V′ →, id A’ V′ | ε
+A’ → = E | ε
+
+## Asignación de Variables
+ID → id ID’
+ID’ → A | C 
+
+A → = E ;
+
+
+## Expresiones Aritméticas
+E  → TE E'
+E’ → + TE E' | - TE E' | ε
+TE  → F TE'
+TE’ → * F TE' | / F TE' | ε
+F  → ( E ) | id | numero | char | C
+
+
+## Expresiones Lógicas
+L  → E OP E
+OP → == | > | <
+
+
 
 ## Llamada a función
-C => id ( APL ); 
+C →  ( APL ); 
 
 ## Lista de Argumentos en la llamada a función
-APL =>  
-    * E  
-    * E , APL  
-    * ε
+APL →  E APL’ | ε
+APL’→  , E APL’ | ε
 
 ## Return (sentencia de retorno)
-R => return E ; 
+R → return E ; 
 
 ## Condición if-else
-I =>  
-    * if ( L ) { B } ELSEIF  
-    * if ( E ) { B }
+I → if ( L ) { B } I’
+I’ →  ELSE | ε
+ELSE → else ELSE’ 
+ELSE’ → if ( L ) { B } I’ | { B } 
+
 
 ELSEIF =>  
     * else if ( L ) { B } ELSEIF  
@@ -74,33 +78,16 @@ ELSEIF =>
     * ε
 
 ## Condición While
-WH =>  
-    * while ( L ) { B } ;  
-    * while ( E ) { B } ;
+WH → while ( L ) { B } 
 
-## Declaración de arreglos
-ARR =>  
-    * T id [ numero ] ;  
-    * T id [ numero ] = { EM } ;
+## Palabras claves adicionales y sus funcionalidades (switch, case, default, break)
+SWITCH → switch ( E ) { CS } 
 
-## Acceso a valor en arreglo
-ARR => id [ E ]
+CS → CA_LIST CA_LIST ’ | DT 
+CA_LIST ‘ → DT | ε 
+CA_LIST → CA CA’
+CA’→CA_LIST | ε 	
 
-EM =>  
-    * { E , Elementos }  
-    * { E }
-
-Elementos =>  
-    * E , Elementos  
-    * E
-
-## SW => switch ( E ) { CS DF } S
-### Caso de switch
-CS =>  
-    * case id : B break ; CS  
-    * ε
-
-### Caso default
-DF =>  
-    * default : B  
-    * ε
+CA → case E : B BK 
+DT → default : B BK
+BK → break; | ε 
