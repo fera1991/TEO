@@ -3,55 +3,80 @@ from enum import StrEnum
 
 class TokenEnum(StrEnum):
 
-    # Token identificador
+
+    # Tipos de datos
+    INT = 'int'
+    CHAR = 'char'
+    FLOAT = 'float'
+
+    # Utilización de variables
     IDENTIFIER = "id"
     NUMERIC_CONSTANT = "num"
     STRING_LITERAL = "string"
     CHAR_LITERAL = "charzcter"
     INVALID_TOKEN = "invalid"
+    EOF = "eof"
 
-    # Palabras reservadas
-    INT = 'int'
-    FLOAT = 'float'
-    DOUBLE = 'double'
-    CHAR = 'char'
-    BOOL = 'bool'
+    # Condicional If- else
     IF = 'if'
     ELSE = 'else'
-    WHILE = 'while'
-    FOR = 'for'
+
+    # Declaración y definición de funciones
     RETURN = 'return'
-    BREAK = 'break'
-    CONTINUE = 'continue'
-    CLASS = 'class'
-    STRUCT = 'struct'
     VOID = 'void'
+
+    #Operadores aritmeticos
+    SUMA = '+'
+    RESTA = '-'
+    MULTIPLICACION = '*'
+    DIVISION = '/'
+
+    # Instrucciones de iteración
+    WHILE = 'while'
+
+    # Asignación
+    ASIGNACION = '='
     
+    # Operadores de Comparación
+    IGUALDAD = '=='
+    MAYOR_QUE = '>'
+    MENOR_QUE = '<'
+    
+    # Inicio y fin de bloque
+    ABRIR_LLAVE = '{'
+    CERRAR_LLAVE = '}'
+    ABRIR_PARENTESIS = '('
+    CERRAR_PARENTESIS = ')'
+    ABRIR_CORCHETE = '['
+    CERRAR_CORCHETE = ']'
+    PUNTO_COMA = ';'
+
+    # Operador coma
+    COMA = ','
+
+    # switch
     SWITCH = 'switch'
+    BREAK = 'break'
+    DEFAULT = "default"
+    CONTINUE = 'continue'
     CASE = 'case'
-    PUBLIC = 'public'
-    PRIVATE = 'private'
-    PROTECTED = 'protected'
-    VIRTUAL = 'virtual'
+
+# Sin usar
+
+    FOR = "for"
+    DO = "do"
+    STRUCT = 'struct'
     CONST = 'const'
     STATIC = 'static'
     LONG = 'long'
     SHORT = 'short'
-    TRUE = 'true'
-    FALSE = 'false'
-    NULLPTR = 'nullptr'
-
-    # Operadores aritméticos
-    SUMA = '+'
-    RESTA = '-'
-    ASTERISCO = '*' # Se usa para multiplicación y punteros
-    DIVISION = '/'
+    
+    #Operadores aritmeticos
     MODULO = '%'
     INCREMENTO = '++'
     DECREMENTO = '--'
-    
+
     # Asignación
-    ASIGNACION = '='
     MAS_IGUAL = '+='
     MENOS_IGUAL = '-='
     POR_IGUAL = '*='
@@ -59,17 +84,10 @@ class TokenEnum(StrEnum):
     MODULO_IGUAL = '%='
 
     # Operadores de Comparación
-    IGUALDAD = '=='
     DIFERENTE = '!='
-    MAYOR_QUE = '>'
-    MENOR_QUE = '<'
     MAYOR_O_IGUAL = '>='
     MENOR_O_IGUAL = '<='
     
-    # Operadores lógicos
-    AND_LOGICO = '&&'
-    OR_LOGICO = '||'
-    NOT_LOGICO = '!'
     
     # Operadores bit a bit
     AMPERSAND = '&' # And. Se usa tambien en punteros
@@ -85,21 +103,7 @@ class TokenEnum(StrEnum):
         
     # Operadores de acceso a miembros
     PUNTO = '.'
-    FLECHA = '->'
-
-    # Operador coma
-    COMA = ','
-    
-    RESOLUCION_AMBITO = '::'
-
-    # Inicio y fin de bloque
-    ABRIR_LLAVE = '{'
-    CERRAR_LLAVE = '}'
-    ABRIR_PARENTESIS = '('
-    CERRAR_PARENTESIS = ')'
-    ABRIR_CORCHETE = '['
-    CERRAR_CORCHETE = ']'
-    PUNTO_COMA = ';'
+    FLECHA = '->'  
 
     # Otros tokens -- No se usaron
     COMILLA_SIMPLE = '\''

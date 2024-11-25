@@ -17,11 +17,11 @@ class BaseTokenProcessor(ABC):
         return self.__next_processor #Regresar el ultimo elemento ingresado, para facilitar encadenamiento
     
     @abstractmethod
-    def analize(self, code: str, position: int) -> TokenInfo:
+    def analize(self, code: str, line: int, position: int) -> TokenInfo:
         pass
     
-    def next(self, code: str, position: int) -> TokenInfo:
+    def next(self, code: str, line: str, position: int) -> TokenInfo:
         if self.__next_processor:
-            return self.__next_processor.analize(code, position)
+            return self.__next_processor.analize(code, line, position)
 
         return None #TODO: regresar token vacio

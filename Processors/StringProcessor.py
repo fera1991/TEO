@@ -25,12 +25,12 @@ class StringProcessor(BaseTokenProcessor):
     def __init__(self) -> None:
         super().__init__()
 
-    def analize(self, code: str, position: int) -> str:
+    def analize(self, code: str, line: int, position: int) -> str:
         i = position # Posicion actual al entrar
         length = len(code)
 
         if(i>=length):
-            return self.next(code, i)
+            return self.next(code, line, i)
 
         incomplete_string: bool = False
         invalid_scape_flag: bool = False
@@ -39,7 +39,7 @@ class StringProcessor(BaseTokenProcessor):
         single_quote_flag: bool = self.__is_single_quote(code[i])
 
         if( not single_quote_flag and not double_quote_flag) or i>=length: #Si no empieza con " ni ' pasar al siguiente eslabon
-            return self.next(code, position)
+            return self.next(code, line, position)
                
         while double_quote_flag:
             i+=1
@@ -80,8 +80,8 @@ class StringProcessor(BaseTokenProcessor):
                     i+=scape.end()-1 # si es un scape valido, saltarlo para evitar errores con //" o //n
             
         if incomplete_string or invalid_scape_flag or too_long_char_flag: # si paro por salto de linea, char muy largo o secuencia invalida
-            return TokenInfo( TokenEnum.INVALID_TOKEN, position, i, code[position:i+1])
+            return TokenInfo( TokenEnum.INVALID_TOKEN, line, position, i, code[position:i+1])
         elif single_quote_flag:
-            return TokenInfo(TokenEnum.CHAR_LITERAL, position, i, code[position:i+1])
+            return TokenInfo(TokenEnum.CHAR_LITERAL, line, position, i, code[position:i+1])
             
-        return TokenInfo(TokenEnum.STRING_LITERAL, position, i, code[position:i+1])
+        return TokenInfo(TokenEnum.STRING_LITERAL, line, position, i, code[position:i+1])

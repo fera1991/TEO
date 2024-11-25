@@ -7,17 +7,17 @@ from TokenInfo import TokenInfo
 class InvalidProcessor(BaseTokenProcessor):
         
     def __is_blank(self, word: str) -> bool:
-        return re.match(r'.*[\s|//|/*]$', word)
+        return re.match(r'.*[\s]|//|/\*.*$', word)
     
     def __init__(self) -> None:
         super().__init__()
 
-    def analize(self, code: str, position: int) -> str:
+    def analize(self, code: str, line: int, position: int) -> str:
         i = position # Posicion actual al entrar
 
         if i>= len(code):
-            return None
+            return  self.next(code, line, position)
         while not self.__is_blank(code[position:i+1]) and i < len(code): # Continuar hasta espacio o salto de linea 
             i+=1 
     
-        return TokenInfo(TokenEnum.INVALID_TOKEN, position, i-1, code[position:i],)
+        return TokenInfo(TokenEnum.INVALID_TOKEN, line, position, i-1, code[position:i],)

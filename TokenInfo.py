@@ -3,17 +3,19 @@ from TokenEnum import TokenEnum
 
 class TokenInfo:
     __token: TokenEnum
+    __line: int
     __initial_position: int
     __final_position: int
     __value: str
 
    
-    def __init__(self, token: TokenEnum, init_position: int, final_position: int, value: str = None) -> None:
+    def __init__(self, token: TokenEnum, line: int, init_position: int, final_position: int, value: str = None) -> None:
         if value:
             self.__value = value
         else:
             self.__value = token.value
         self.__token = token
+        self.__line = line
         self.__initial_position = init_position
         self.__final_position = final_position
         
@@ -32,9 +34,12 @@ class TokenInfo:
     
     def get_value(self) -> str:
         return self.__value
+    def get_line(self) -> str:
+        return self.__line
     
     def print(self):
         print("\nToken: " + self.__token.name)
         print("Valor: " + str(self.__value))
+        print("Linea: " + str(self.__line))
         print("Posición 1er caracter: " + str(self.__initial_position))
         print("Posición ultimo caracter: " + str(self.__final_position))

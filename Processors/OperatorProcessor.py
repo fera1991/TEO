@@ -1,26 +1,42 @@
+from typing import Optional
 from Processors.BaseVerification import BaseTokenProcessor
 from TokenEnum import TokenEnum
 from TokenInfo import TokenInfo
 
 class OperatorProcessor(BaseTokenProcessor):
-    __token: TokenEnum
-    __symbol: str
+    __single_symbol_operators = list[TokenEnum]
+    __double_symbol_operators = list[TokenEnum]
 
-    def __init__(self, operator_symbol: str, operator_token: TokenEnum) -> None:
+    def __init__(self, operators_token) -> None:
         super().__init__()
-        self.__symbol = operator_symbol
-        self.__token = operator_token
+        self.__single_symbol_operators = [token for token in operators_token if len(token) == 1]
+        self.__double_symbol_operators = [token for token in operators_token if len(token) == 2]
 
     
-    def __init__(self, operator_token: TokenEnum) -> None:
-        super().__init__()
-        self.__symbol = operator_token.value
-        self.__token = operator_token
+    def __find_operator(self,  word: str) -> Optional[TokenEnum]:
 
-    def analize(self, code: str, initial_position: int) -> str:
-        i = initial_position + len(self.__symbol)
+        if word =="":
+            return None
+        
+        for operator in self.__double_symbol_operators: # Buscar primero en los operadores de dos simbolos
+            if word == operator.value:
+                return operator
+        
+        for operator in self.__single_symbol_operators: # verificar 
+            if word == operator.value:
+                return operator
+        
+        return None
+    
+    def analize(self, code: str, line: int, initial_position: int) -> str:
+        i = initial_position
 
-        if code[initial_position: i] == self.__symbol: #Comparar si encuentra el operador en la esa posicion
-            return TokenInfo(self.__token, initial_position, i-1)
+        for operator in self.__double_symbol_operators: # Buscar primero en los operadores de dos simbolos
+            if code[i:i+2] == operator.value:
+                return TokenInfo(operator, line, i, i+1)
             
-        return self.next(code, initial_position)
+        for operator in self.__single_symbol_operators: # verificar 
+            if code[i:i+1] == operator.value:
+                return TokenInfo(operator, line, initial_position, i)
+        
+        return self.next(code, line, initial_position)
