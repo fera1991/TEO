@@ -11,6 +11,8 @@ from TokenEnum import TokenEnum
 from TokenInfo import TokenInfo
 from SymbolTable import SymbolTable
 from collections import defaultdict
+from syntaxTree import NodoArbol, generar_arbol_sintactico, generar_arbol_sintactico_terminal
+
 
 def matriz_default():
     return defaultdict(lambda: None) # Any non-defined cell will return None
@@ -202,15 +204,23 @@ def miParser(lexer: Lexer, symbol_table: SymbolTable):
     
     tok: TokenInfo = lexer.tokenInfo()
     x=stack[-1] #primer elemento de der a izq
+
+    raiz = NodoArbol("S")  # Cambiar "S" por el no terminal inicial de tu gramática
+    nodos_pila = [raiz]  # Pila paralela para construir el árbol
+
     while True:    
         if x == tok.get_token() and x == T.EOF:
             print("Cadena reconocida exitosamente")
+            generar_arbol_sintactico(raiz)  # Generar y guardar el árbol sintáctico
+            generar_arbol_sintactico_terminal(raiz)
             return #aceptar
         else:
             if x == tok.get_token() and x != T.EOF:
                 stack.pop()
+                nodo_actual = nodos_pila.pop()  # Obtener el nodo correspondiente en la pila paralela
+                nodo_actual.agregar_hijo(NodoArbol(tok.get_token().name))  # Agregar el nodo terminal como hijo
                 x=stack[-1]
-                tok=lexer.tokenInfo()               
+                tok=lexer.tokenInfo()             
             if isinstance(x, TokenEnum) and x != tok.get_token():
                 print("Error: se esperaba ", tok.get_token())
                 return 0;
@@ -235,7 +245,16 @@ def miParser(lexer: Lexer, symbol_table: SymbolTable):
                     agregar_pila(celda)
                     print_stack()
                     print("------------")
-                    x=stack[-1]            
+                    x=stack[-1]
+
+                    # Agregar nodos hijos al árbol sintáctico
+                    nodo_actual = nodos_pila.pop()  # Nodo actual en la pila paralela
+                    nuevos_nodos = []  # Lista temporal para los nodos hijos
+                    for simbolo in celda:  # Procesamos en orden inverso para respetar la pila
+                        nuevo_nodo = NodoArbol(simbolo.name)
+                        nodo_actual.agregar_hijo(nuevo_nodo)  # Agregamos cada nuevo nodo al nodo actual
+                        nuevos_nodos.append(nuevo_nodo)
+                    nodos_pila.extend(reversed(nuevos_nodos))  # Agregamos nuevos nodos a la pila paralela en orden correcto      
 
 def string_celda(c):
     return c.value if isinstance(c, TokenEnum) else c.name
