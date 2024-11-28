@@ -1,4 +1,5 @@
 from FileHandler import FileHandler
+from LL1Generator import LL1Generator
 from Lexer import Lexer
 from NonTerminalEnum import NonTerminalEnum
 from Processors.InvalidProcessor import InvalidProcessor
@@ -19,186 +20,101 @@ def matriz_default():
 
 NT = NonTerminalEnum
 T = TokenEnum
-
 tabla_ll1 = defaultdict(matriz_default)
 
-tabla_ll1[NT.S][T.VOID] = [NT.FN, NT.S]
-tabla_ll1[NT.S][T.INT] = [NT.FN, NT.S]
-tabla_ll1[NT.S][T.CHAR] = [NT.FN, NT.S]
-tabla_ll1[NT.S][T.FLOAT] = [NT.FN, NT.S]
-tabla_ll1[NT.S][T.EOF] = [] # palabra vacia
 
-tabla_ll1[NT.FN][T.VOID]=[NT.TR, T.IDENTIFIER, T.ABRIR_PARENTESIS, NT.P, T.CERRAR_PARENTESIS, NT.FN_]
-tabla_ll1[NT.FN][T.INT]=[NT.TR, T.IDENTIFIER, T.ABRIR_PARENTESIS, NT.P, T.CERRAR_PARENTESIS, NT.FN_]
-tabla_ll1[NT.FN][T.CHAR]=[NT.TR, T.IDENTIFIER, T.ABRIR_PARENTESIS, NT.P, T.CERRAR_PARENTESIS, NT.FN_]
-tabla_ll1[NT.FN][T.FLOAT]=[NT.TR, T.IDENTIFIER, T.ABRIR_PARENTESIS, NT.P, T.CERRAR_PARENTESIS, NT.FN_]
+# Definir las producciones de la gramática
+P = defaultdict(list)
 
-tabla_ll1[NT.TR][T.VOID]=[T.VOID]
-tabla_ll1[NT.TR][T.INT]=[NT.T]
-tabla_ll1[NT.TR][T.CHAR]=[NT.T]
-tabla_ll1[NT.TR][T.FLOAT]=[NT.T]
+P[NT.S] = [[NT.FN, NT.S], []]
 
-tabla_ll1[NT.P][T.CERRAR_PARENTESIS]=[] # palabra vacia
-tabla_ll1[NT.P][T.INT]=[NT.T, T.IDENTIFIER, NT.P_]
-tabla_ll1[NT.P][T.CHAR]=[NT.T, T.IDENTIFIER, NT.P_]
-tabla_ll1[NT.P][T.FLOAT]=[NT.T, T.IDENTIFIER, NT.P_]
+P[NT.FN]=[[NT.TR, T.IDENTIFIER, T.ABRIR_PARENTESIS, NT.P, T.CERRAR_PARENTESIS, NT.FN_]]
 
-tabla_ll1[NT.P_][T.CERRAR_PARENTESIS]=[] # palabra vacia
-tabla_ll1[NT.P_][T.COMA]=[T.COMA, NT.T, T.IDENTIFIER, NT.P_]
+P[NT.TR]=[[T.VOID],[NT.T]]
 
-tabla_ll1[NT.FN_][T.PUNTO_COMA]=[T.PUNTO_COMA]
-tabla_ll1[NT.FN_][T.ABRIR_LLAVE]=[T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE]
+P[NT.P]=[[NT.T, T.IDENTIFIER, NT.P_], []]
 
-tabla_ll1[NT.B_][T.IDENTIFIER]=[NT.B, NT.B_]
-tabla_ll1[NT.B_][T.CERRAR_LLAVE]=[] # PALABRA VACIA
-tabla_ll1[NT.B_][T.INT]=[NT.B, NT.B_]
-tabla_ll1[NT.B_][T.CHAR]=[NT.B, NT.B_]
-tabla_ll1[NT.B_][T.FLOAT]=[NT.B, NT.B_]
-tabla_ll1[NT.B_][T.RETURN]=[NT.B, NT.B_]
-tabla_ll1[NT.B_][T.IF]=[NT.B, NT.B_]
-tabla_ll1[NT.B_][T.WHILE]=[NT.B, NT.B_]
-tabla_ll1[NT.B_][T.SWITCH]=[NT.B, NT.B_]
+P[NT.P_]=[[T.COMA, NT.T, T.IDENTIFIER, NT.P_],[]]
 
-tabla_ll1[NT.B][T.IDENTIFIER]=[NT.ID]
-tabla_ll1[NT.B][T.INT]=[NT.D]
-tabla_ll1[NT.B][T.CHAR]=[NT.D]
-tabla_ll1[NT.B][T.FLOAT]=[NT.D]
-tabla_ll1[NT.B][T.RETURN]=[NT.R]
-tabla_ll1[NT.B][T.IF]=[NT.I]
-tabla_ll1[NT.B][T.WHILE]=[NT.WH]
-tabla_ll1[NT.B][T.SWITCH]=[NT.SW]
+P[NT.FN_]=[[T.PUNTO_COMA],[T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE]]
 
-tabla_ll1[NT.D][T.INT]=[NT.T, NT.V, T.PUNTO_COMA]
-tabla_ll1[NT.D][T.CHAR]=[NT.T, NT.V, T.PUNTO_COMA]
-tabla_ll1[NT.D][T.FLOAT]=[NT.T, NT.V, T.PUNTO_COMA]
+P[NT.B_]=[[NT.B, NT.B_], []]
 
-tabla_ll1[NT.T][T.INT]=[T.INT]
-tabla_ll1[NT.T][T.CHAR]=[T.CHAR]
-tabla_ll1[NT.T][T.FLOAT]=[T.FLOAT]
+P[NT.B]=[[NT.ID],[NT.D],[NT.R],[NT.I],[NT.WH],[NT.SW]]
 
-tabla_ll1[NT.V][T.IDENTIFIER]=[T.IDENTIFIER, NT.A_, NT.V_]
+P[NT.D]=[[NT.T, NT.V, T.PUNTO_COMA]]
 
-tabla_ll1[NT.V_][T.COMA]=[T.COMA, T.IDENTIFIER, NT.A_, NT.V_]
-tabla_ll1[NT.V_][T.PUNTO_COMA]=[] # PALABRA VACIA
+P[NT.T]=[[T.INT], [T.CHAR], [T.FLOAT]]
 
-tabla_ll1[NT.A_][T.COMA]=[] # PALABRA VACIA
-tabla_ll1[NT.A_][T.PUNTO_COMA]=[] # PALABRA VACIA
-tabla_ll1[NT.A_][T.ASIGNACION]=[T.ASIGNACION, NT.E]
+P[NT.V]=[[T.IDENTIFIER, NT.A_, NT.V_]]
 
-tabla_ll1[NT.ID][T.IDENTIFIER]=[T.IDENTIFIER, NT.ID_]
+P[NT.V_]=[[T.COMA, T.IDENTIFIER, NT.A_, NT.V_], []]
 
-tabla_ll1[NT.ID_][T.IDENTIFIER]=[NT.C]
-tabla_ll1[NT.ID_][T.ASIGNACION]=[NT.A]
+P[NT.A_]=[[], [T.ASIGNACION, NT.E]]
 
-tabla_ll1[NT.A][T.ASIGNACION]=[T.ASIGNACION, NT.E, T.PUNTO_COMA]
+P[NT.ID]=[[T.IDENTIFIER, NT.ID_]]
 
-tabla_ll1[NT.E][T.IDENTIFIER]=[NT.TE, NT.E_]
-tabla_ll1[NT.E][T.ABRIR_PARENTESIS]=[NT.TE, NT.E_]
-tabla_ll1[NT.E][T.NUMERIC_CONSTANT]=[NT.TE, NT.E_]
-tabla_ll1[NT.E][T.CHAR_LITERAL]=[NT.TE, NT.E_]
+P[NT.ID_]=[[NT.C, T.PUNTO_COMA], [NT.A]]
 
-tabla_ll1[NT.E_][T.CERRAR_PARENTESIS]=[] # PALABRA VACIA
-tabla_ll1[NT.E_][T.COMA]=[] # PALABRA VACIA
-tabla_ll1[NT.E_][T.PUNTO_COMA]=[] # PALABRA VACIA
-tabla_ll1[NT.E_][T.SUMA]=[T.SUMA, NT.TE, NT.E_]
-tabla_ll1[NT.E_][T.RESTA]=[T.RESTA, NT.TE, NT.E_]
-tabla_ll1[NT.E_][T.IGUALDAD]=[] # PALABRA VACIA
-tabla_ll1[NT.E_][T.MAYOR_QUE]=[] # PALABRA VACIA
-tabla_ll1[NT.E_][T.MENOR_QUE]=[] # PALABRA VACIA
-tabla_ll1[NT.E_][T.DOS_PUNTOS]=[] # PALABRA VACIA
+P[NT.A]=[[T.ASIGNACION, NT.E, T.PUNTO_COMA]]
 
-tabla_ll1[NT.TE][T.IDENTIFIER]=[NT.F, NT.TE_]
-tabla_ll1[NT.TE][T.ABRIR_PARENTESIS]=[NT.F, NT.TE_]
-tabla_ll1[NT.TE][T.NUMERIC_CONSTANT]=[NT.F, NT.TE_]
-tabla_ll1[NT.TE][T.CHAR_LITERAL]=[NT.F, NT.TE_]
+P[NT.E]=[[NT.TE, NT.E_]]
 
-tabla_ll1[NT.TE_][T.CERRAR_PARENTESIS]=[] # PALABRA VACIA
-tabla_ll1[NT.TE_][T.COMA]=[] # PALABRA VACIA
-tabla_ll1[NT.TE_][T.PUNTO_COMA]=[] # PALABRA VACIA
-tabla_ll1[NT.TE_][T.SUMA]=[] # PALABRA VACIA
-tabla_ll1[NT.TE_][T.RESTA]=[] # PALABRA VACIA
-tabla_ll1[NT.TE_][T.MULTIPLICACION]=[T.MULTIPLICACION, NT.F, NT.TE_]
-tabla_ll1[NT.TE_][T.DIVISION]=[T.DIVISION, NT.F, NT.TE_]
-tabla_ll1[NT.TE_][T.IGUALDAD]=[] # PALABRA VACIA
-tabla_ll1[NT.TE_][T.MAYOR_QUE]=[] # PALABRA VACIA
-tabla_ll1[NT.TE_][T.MENOR_QUE]=[] # PALABRA VACIA
-tabla_ll1[NT.TE_][T.DOS_PUNTOS]=[] # PALABRA VACIA
+P[NT.E_]=[[], [T.SUMA, NT.TE, NT.E_], [T.RESTA, NT.TE, NT.E_]]
 
-tabla_ll1[NT.F][T.IDENTIFIER]=[T.IDENTIFIER]
-tabla_ll1[NT.F][T.ABRIR_PARENTESIS]=[T.ABRIR_PARENTESIS, NT.E, T.CERRAR_PARENTESIS]
-tabla_ll1[NT.F][T.NUMERIC_CONSTANT]=[T.NUMERIC_CONSTANT]
-tabla_ll1[NT.F][T.CHAR_LITERAL]=[T.CHAR_LITERAL]
+P[NT.TE]=[[NT.F, NT.TE_]]
 
-tabla_ll1[NT.L][T.IDENTIFIER]=[NT.E, NT.OP, NT.E]
-tabla_ll1[NT.L][T.ABRIR_PARENTESIS]=[NT.E, NT.OP, NT.E]
-tabla_ll1[NT.L][T.NUMERIC_CONSTANT]=[NT.E, NT.OP, NT.E]
-tabla_ll1[NT.L][T.CHAR_LITERAL]=[NT.E, NT.OP, NT.E]
+P[NT.TE_]=[[], [T.MULTIPLICACION, NT.F, NT.TE_], [T.DIVISION, NT.F, NT.TE_]]
 
+P[NT.F]=[[T.IDENTIFIER, NT.F_], [T.ABRIR_PARENTESIS, NT.E, T.CERRAR_PARENTESIS], [T.NUMERIC_CONSTANT], [T.CHAR_LITERAL]]
 
-tabla_ll1[NT.OP][T.IGUALDAD]=[T.IGUALDAD]
-tabla_ll1[NT.OP][T.MAYOR_QUE]=[T.MAYOR_QUE]
-tabla_ll1[NT.OP][T.MENOR_QUE]=[T.MENOR_QUE]
+P[NT.F_]=[[NT.C], []]
 
-tabla_ll1[NT.C][T.IDENTIFIER]=[T.IDENTIFIER, T.ABRIR_PARENTESIS, NT.APL, T.CERRAR_PARENTESIS, T.PUNTO_COMA]
+P[NT.L]=[[NT.E, NT.OP, NT.E]]
 
-tabla_ll1[NT.APL][T.IDENTIFIER]=[NT.E, NT.APL_]
-tabla_ll1[NT.APL][T.ABRIR_PARENTESIS]=[NT, NT.APL_]
-tabla_ll1[NT.APL][T.CERRAR_PARENTESIS]=[] # PALABRA VACIA
-tabla_ll1[NT.APL][T.NUMERIC_CONSTANT]=[NT.E, NT.APL_]
-tabla_ll1[NT.APL][T.CHAR_LITERAL]=[NT.E, NT.APL_]
+P[NT.OP]=[[T.IGUALDAD], [T.MAYOR_QUE], [T.MENOR_QUE]]
 
-tabla_ll1[NT.APL_][T.CERRAR_PARENTESIS]=[] # PALABRA VACIA
-tabla_ll1[NT.APL_][T.COMA]=[T.COMA, NT.E, NT.APL_]
+P[NT.C]=[[T.ABRIR_PARENTESIS, NT.APL, T.CERRAR_PARENTESIS]]
 
-tabla_ll1[NT.R][T.RETURN]=[T.RETURN, NT.E, T.PUNTO_COMA]
+P[NT.APL]=[[NT.E, NT.APL_], []]
 
-tabla_ll1[NT.I][T.IDENTIFIER]=[] # PALABRA VACIA
-tabla_ll1[NT.I][T.IF]=[T.IF, T.ABRIR_PARENTESIS, NT.L, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE, NT.I_]
+P[NT.APL_]=[[], [T.COMA, NT.E, NT.APL_]]
 
-tabla_ll1[NT.I_][T.CERRAR_LLAVE]=[] # PALABRA VACIA
-tabla_ll1[NT.I_][T.INT]=[] # PALABRA VACIA
-tabla_ll1[NT.I_][T.CHAR]=[] # PALABRA VACIA
-tabla_ll1[NT.I_][T.FLOAT]=[] # PALABRA VACIA
-tabla_ll1[NT.I_][T.RETURN]=[] # PALABRA VACIA
-tabla_ll1[NT.I_][T.IF]=[] # PALABRA VACIA
-tabla_ll1[NT.I_][T.ELSE]=[NT.ELSE]
-tabla_ll1[NT.I_][T.WHILE]=[] # PALABRA VACIA
-tabla_ll1[NT.I_][T.SWITCH]=[] # PALABRA VACIA
-tabla_ll1[NT.I_][T.CASE]=[] # PALABRA VACIA
-tabla_ll1[NT.I_][T.DEFAULT]=[] # PALABRA VACIA
-tabla_ll1[NT.I_][T.BREAK]=[] # PALABRA VACIA
+P[NT.R]=[[T.RETURN, NT.R_, T.PUNTO_COMA]]
 
-tabla_ll1[NT.ELSE][T.ELSE]=[T.ELSE, NT.ELSE_]
+P[NT.R_]=[[NT.E], []]
 
-tabla_ll1[NT.ELSE_][T.ABRIR_LLAVE]=[T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE]
-tabla_ll1[NT.ELSE_][T.IF]=[T.IF, T.ABRIR_PARENTESIS, NT.L, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.B, T.CERRAR_LLAVE, NT.I_] # TODO: Revisar despues si realmente ocupa B en lugar de B_
+P[NT.I]=[[T.IF, T.ABRIR_PARENTESIS, NT.L, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE, NT.I_]]
 
-tabla_ll1[NT.WH][T.WHILE]=[T.WHILE, T.ABRIR_PARENTESIS, NT.L, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE]
+P[NT.I_]=[[NT.ELSE], []]
 
-tabla_ll1[NT.SW][T.SWITCH]=[T.ABRIR_PARENTESIS, NT.E, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.CS, T.CERRAR_LLAVE]
+P[NT.ELSE]=[[T.ELSE, NT.ELSE_]]
 
-tabla_ll1[NT.CS][T.CASE]=[NT.CA_LIST, NT.CA_LIST_]
-tabla_ll1[NT.CS][T.DEFAULT]=[NT.DT]
+P[NT.ELSE_]=[[T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE], [T.IF, T.ABRIR_PARENTESIS, NT.L, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.B, T.CERRAR_LLAVE, NT.I_]]
+# TODO: Revisar despues si realmente ocupa B en lugar de B_
 
-tabla_ll1[NT.CA_LIST_][T.CERRAR_LLAVE]=[] # PALABRA VACIA
-tabla_ll1[NT.CA_LIST_][T.DEFAULT]=[NT.DT]
+P[NT.WH]=[[T.WHILE, T.ABRIR_PARENTESIS, NT.L, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE]]
 
-tabla_ll1[NT.CA_LIST][T.CASE]=[NT.CA, NT.CA_]
+P[NT.SW]=[[ T.SWITCH, T.ABRIR_PARENTESIS, NT.E, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.CS, T.CERRAR_LLAVE]]
 
-tabla_ll1[NT.CA_][T.CERRAR_LLAVE]=[] # PALABRA VACIA
-tabla_ll1[NT.CA_][T.CASE]=[NT.CA_LIST]
-tabla_ll1[NT.CA_][T.DEFAULT]=[] # PALABRA VACIA
+P[NT.CS]=[[NT.CA_LIST, NT.CA_LIST_], [NT.DT]]
 
-tabla_ll1[NT.CA][T.CASE]=[T.CASE, NT.E, T.DOS_PUNTOS, NT.B, NT.BK]
+P[NT.CA_LIST_]=[[], [NT.DT]]
 
-tabla_ll1[NT.DT][T.DEFAULT]=[T.DEFAULT, T.DOS_PUNTOS, NT.B, NT.BK] # PALABRA VACIA
+P[NT.CA_LIST]=[[NT.CA, NT.CA_]]
 
-tabla_ll1[NT.BK][T.CERRAR_LLAVE]=[] # PALABRA VACIA
-tabla_ll1[NT.BK][T.CASE]=[] # PALABRA VACIA
-tabla_ll1[NT.BK][T.DEFAULT]=[] # PALABRA VACIA
-tabla_ll1[NT.BK][T.BREAK]=[T.BREAK, T.PUNTO_COMA]
+P[NT.CA_]=[[NT.CA_LIST],[]]
+
+P[NT.CA]=[[T.CASE, NT.E, T.DOS_PUNTOS, NT.B, NT.BK]]
+
+P[NT.DT]=[[T.DEFAULT, T.DOS_PUNTOS, NT.B, NT.BK]]
+
+P[NT.BK]=[[T.BREAK, T.PUNTO_COMA], []]
 
 stack = [T.EOF, NT.S]
+
+generator = LL1Generator()
+tabla_ll1 = generator.generar_tabla(P, True)
 
 def miParser(lexer: Lexer, symbol_table: SymbolTable):
     
