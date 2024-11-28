@@ -7,7 +7,7 @@ class SymbolTable:
         self.current_scope = 'global'  # Definir el ámbito inicial como 'global'
         self.previous_tokens = []  # Para llevar un registro de los últimos tokens procesados
 
-    def process_token(self, token_type, token_value, token_initial_position, token_final_position):
+    def process_token(self, token_type, token_value, token_initial_position, token_final_position, token_line_position):
         # Agregar el token actual a la lista de tokens previos
         self.previous_tokens.append((token_type, token_value))
 

@@ -53,7 +53,8 @@ class Lexer:
         TokenEnum.CERRAR_PARENTESIS, 
         TokenEnum.ABRIR_CORCHETE, 
         TokenEnum.CERRAR_CORCHETE, 
-        TokenEnum.PUNTO_COMA]
+        TokenEnum.PUNTO_COMA,
+        TokenEnum.DOS_PUNTOS]
 
         ignore_processor = IgnoreProcessor()
         inde_and_key_processor = IdentifierAndKeywordProcessor(keywords)
@@ -106,7 +107,7 @@ class Lexer:
             line = token_info.get_line()
             
             # Procesar el token y añadirlo a la tabla de símbolos
-            symbol_table.process_token(token_info.get_token().name, token_info.get_value(), token_info.get_initial_position(), token_info.get_final_position())
+            symbol_table.process_token(token_info.get_token().name, token_info.get_value(), token_info.get_initial_position(), token_info.get_final_position(), token_info.get_line())
 
             if(token_info.get_token() == TokenEnum.EOF):
                 break

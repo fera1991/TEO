@@ -90,7 +90,7 @@ P[NT.I_]=[[NT.ELSE], []]
 
 P[NT.ELSE]=[[T.ELSE, NT.ELSE_]]
 
-P[NT.ELSE_]=[[T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE], [T.IF, T.ABRIR_PARENTESIS, NT.L, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.B, T.CERRAR_LLAVE, NT.I_]]
+P[NT.ELSE_]=[[T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE], [T.IF, T.ABRIR_PARENTESIS, NT.L, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE, NT.I_]]
 # TODO: Revisar despues si realmente ocupa B en lugar de B_
 
 P[NT.WH]=[[T.WHILE, T.ABRIR_PARENTESIS, NT.L, T.CERRAR_PARENTESIS, T.ABRIR_LLAVE, NT.B_, T.CERRAR_LLAVE]]
@@ -105,9 +105,9 @@ P[NT.CA_LIST]=[[NT.CA, NT.CA_]]
 
 P[NT.CA_]=[[NT.CA_LIST],[]]
 
-P[NT.CA]=[[T.CASE, NT.E, T.DOS_PUNTOS, NT.B, NT.BK]]
+P[NT.CA]=[[T.CASE, NT.E, T.DOS_PUNTOS, NT.B_, NT.BK]]
 
-P[NT.DT]=[[T.DEFAULT, T.DOS_PUNTOS, NT.B, NT.BK]]
+P[NT.DT]=[[T.DEFAULT, T.DOS_PUNTOS, NT.B_, NT.BK]]
 
 P[NT.BK]=[[T.BREAK, T.PUNTO_COMA], []]
 
@@ -128,17 +128,17 @@ def miParser(lexer: Lexer, symbol_table: SymbolTable):
         if x == tok.get_token() and x == T.EOF:
             print("Cadena reconocida exitosamente")
             generar_arbol_sintactico(raiz)  # Generar y guardar el árbol sintáctico
-            generar_arbol_sintactico_terminal(raiz)
             return #aceptar
         else:
             if x == tok.get_token() and x != T.EOF:
                 stack.pop()
-                nodo_actual = nodos_pila.pop()  # Obtener el nodo correspondiente en la pila paralela
-                nodo_actual.agregar_hijo(NodoArbol(tok.get_token().name))  # Agregar el nodo terminal como hijo
+                nodos_pila.pop()  # Obtener el nodo correspondiente en la pila paralela
                 x=stack[-1]
                 tok=lexer.tokenInfo()             
             if isinstance(x, TokenEnum) and x != tok.get_token():
                 print("Error: se esperaba ", tok.get_token())
+                print("En Linea:", tok.get_line())
+                print("En posición:", tok.get_initial_position())
                 return 0;
             if not isinstance(x, TokenEnum): #es no terminal
                 print("van entrar a la tabla:")
