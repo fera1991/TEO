@@ -2,44 +2,44 @@ from TokenEnum import TokenEnum
 
 
 class TokenInfo:
-    __token: TokenEnum
-    __line: int
-    __initial_position: int
-    __final_position: int
-    __value: str
+    token: TokenEnum
+    line: int
+    initial_position: int
+    final_position: int
+    value: str
 
    
     def __init__(self, token: TokenEnum, line: int, init_position: int, final_position: int, value: str = None) -> None:
         if value:
-            self.__value = value
+            self.value = value
         else:
-            self.__value = token.value
-        self.__token = token
-        self.__line = line
-        self.__initial_position = init_position
-        self.__final_position = final_position
+            self.value = token.value
+        self.token = token
+        self.line = line
+        self.initial_position = init_position
+        self.final_position = final_position
         
     
     def get_token(self) -> TokenEnum:
-        return self.__token
+        return self.token
     
     def get_initial_position(self) -> str:
-        return self.__initial_position
+        return self.initial_position
     
     def get_final_position(self) -> str:
-        return self.__final_position
+        return self.final_position
     
     def get_symbol(self) -> str:
-        return self.__token.value # El simbolo sera el mismo valor del operador
+        return self.token.value # El simbolo sera el mismo valor del operador
     
     def get_value(self) -> str:
-        return self.__value
+        return self.value
     def get_line(self) -> str:
-        return self.__line
+        return self.line
     
     def print(self):
-        print("\nToken: " + self.__token.name)
-        print("Valor: " + str(self.__value))
-        print("Linea: " + str(self.__line))
-        print("Posición 1er caracter: " + str(self.__initial_position))
-        print("Posición ultimo caracter: " + str(self.__final_position))
+        print("\nToken: " + self.token.name)
+        print("Valor: " + str(self.value))
+        print("Linea: " + str(self.line))
+        print("Posición 1er caracter: " + str(self.initial_position))
+        print("Posición ultimo caracter: " + str(self.final_position))

@@ -60,9 +60,10 @@ class TokenEnum(StrEnum):
     DEFAULT = "default"
     CONTINUE = 'continue'
     CASE = 'case'
+    DOS_PUNTOS = ':'
 
 # Sin usar
-
+'''
     FOR = "for"
     DO = "do"
     STRUCT = 'struct'
@@ -99,7 +100,6 @@ class TokenEnum(StrEnum):
 
     # Operadores condicionales
     TERNARIO = '?'
-    DOS_PUNTOS = ':' # Usado tambien en la herencia de clases
         
     # Operadores de acceso a miembros
     PUNTO = '.'
@@ -116,4 +116,4 @@ class TokenEnum(StrEnum):
 
 
     
-    
+'''

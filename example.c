@@ -27,7 +27,7 @@ int main() {
 
     int suma = to_int(num1) + to_int(num2);
 
-    print("La suma es: ");
+    print('d');
     putchar(suma + '0');
     putchar('\n');
 

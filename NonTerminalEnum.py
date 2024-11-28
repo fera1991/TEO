@@ -31,11 +31,13 @@ class NonTerminalEnum(StrEnum):
     TE = 'T Expression' # F TE_
     TE_ = 'T Expression derived' # Operación suma o resta: F TE_ | /F TE_ | w
     F = 'Factor' # ( E ) | id | numero | char | C
+    F_ = 'Factor derived'
 
     C = 'Call' #LLamada a funcion: id (APL)
     APL = 'Argument parameters list' # E APL_ | e
     APL_ = 'Argument parameters list  derived' # , E APL_ | e
-    R = 'Return' # return E;
+    R = 'Return' # return R_ ;
+    R_ = 'Return derived' # E | e
 
     I = 'If' # if ( L ) { B } I_
     I_ = 'If derived' # ELSE | e
