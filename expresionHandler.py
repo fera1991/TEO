@@ -51,7 +51,6 @@ class Expresion():
         self.position=p
 
 class ExpressionHandler():
-    semanticStack: []
 
     def __init__(self, symbolTable: SymbolTable, semanticStack, error):
         self.semanticStack = semanticStack
