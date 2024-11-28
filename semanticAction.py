@@ -45,10 +45,10 @@ class Parameter():
         self.type = type
 
 class semanticAction():
-    actionStack: []
-    semanticStack: []
-    scopeStack: []
-    returnStack: []
+    actionStack = []
+    semanticStack = []
+    scopeStack = []
+    returnStack = []
     symbolTable: SymbolTable
     tokenActual: TokenInfo
     insideSwitch: bool
