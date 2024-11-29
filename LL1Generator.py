@@ -1,6 +1,7 @@
 from collections import defaultdict
 from NonTerminalEnum import NonTerminalEnum
 from TokenEnum import TokenEnum
+from semanticAction import ActionEnum
 
 class LL1Generator():
 
@@ -22,7 +23,12 @@ class LL1Generator():
             s+="' ' "
 
         for e in p:
-            s += e.value if isinstance(e, TokenEnum) else e.name
+            if isinstance(e, TokenEnum):
+                s += e.value
+            elif isinstance(e, ActionEnum):
+                s += "#" + e.name
+            else:
+                s += e.name
             s+=" "
         return s
 
@@ -93,9 +99,10 @@ class LL1Generator():
                 # Obtener el conjunto FIRST de la producción
                 first_produccion = set()
                 for simbolo in produccion:
-                    first_produccion |= first_sets[simbolo]
-                    if None not in first_sets[simbolo]:  # Parar si no contiene vacío
-                        break
+                    if isinstance(simbolo, (TokenEnum, NonTerminalEnum)):
+                        first_produccion |= first_sets[simbolo]
+                        if None not in first_sets[simbolo]:  # Parar si no contiene vacío
+                            break
                 else:
                     first_produccion.add(None)  # Agregar vacío si todos los símbolos lo tienen
 
@@ -114,21 +121,38 @@ class LL1Generator():
                         self.tabla_ll1[non_terminal][terminal] = produccion
 
         return self.tabla_ll1
+    
+    def filtrar_producciones(self,P):
+        nueva_P = defaultdict(list)
+        
+        for no_terminal, producciones in P.items():
+            for produccion in producciones:
+                # Filtrar elementos que no sean sintácticos
+                nueva_produccion = [
+                    simbolo for simbolo in produccion
+                    if isinstance(simbolo, (NonTerminalEnum, TokenEnum))
+                ]
+                # Agregar la producción filtrada al nuevo conjunto
+                nueva_P[no_terminal].append(nueva_produccion)
+        
+        return nueva_P
 
     def generar_tabla(self, P, doPrint = False):
         
         self.First = defaultdict(lambda: None)
         self.Follow = defaultdict(lambda: None)
 
+        P_filtered = self.filtrar_producciones(P) # Produccione sin anotaciones semanticas, solo terminales y no terminales
+
         # Calcular FIRST para todos los símbolos
         first_sets = defaultdict(set)
-        for symbol in list(P.keys()) + list(TokenEnum):
-            first_sets[symbol] = self.calcular_first(symbol, P, set())
+        for symbol in list(P_filtered.keys()) + list(TokenEnum):
+            first_sets[symbol] = self.calcular_first(symbol, P_filtered, set())
 
         # Calcular FOLLOW para todos los no terminales
         follow_sets = defaultdict(set)
-        for non_terminal in P:
-            self.calcular_follow(non_terminal, P, follow_sets, NonTerminalEnum.S)
+        for non_terminal in P_filtered:
+            self.calcular_follow(non_terminal, P_filtered, follow_sets, NonTerminalEnum.S)
 
         # Llenar la tabla LL(1)
         P = self.llenar_tabla_ll1(P, first_sets, follow_sets)
