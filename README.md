@@ -46,14 +46,12 @@ E  → TE E'
 E’ → + TE E' | - TE E' | ε
 TE  → F TE'
 TE’ → * F TE' | / F TE' | ε
-F  → ( E ) | id | numero | char | C
-
+F  → ( E ) | id F’ | numero | char 
+F’ → ε | C
 
 ## Expresiones Lógicas
 L  → E OP E
 OP → == | > | <
-
-
 
 ## Llamada a función
 C →  ( APL ); 
@@ -63,22 +61,17 @@ APL →  E APL’ | ε
 APL’→  , E APL’ | ε
 
 ## Return (sentencia de retorno)
-R → return E ; 
+R → return R’ ; 
+R’ → E | ε
 
 ## Condición if-else
-I → if ( L ) { B } I’
+I → if ( L ) { B' } I’
 I’ →  ELSE | ε
 ELSE → else ELSE’ 
-ELSE’ → if ( L ) { B } I’ | { B } 
-
-
-ELSEIF =>  
-    * else if ( L ) { B } ELSEIF  
-    * else { B }  
-    * ε
+ELSE’ → if ( L ) { B' } I’ | { B' } 
 
 ## Condición While
-WH → while ( L ) { B } 
+WH → while ( L ) { B' } 
 
 ## Palabras claves adicionales y sus funcionalidades (switch, case, default, break)
 SWITCH → switch ( E ) { CS } 
@@ -88,6 +81,6 @@ CA_LIST ‘ → DT | ε
 CA_LIST → CA CA’
 CA’→CA_LIST | ε 	
 
-CA → case E : B BK 
-DT → default : B BK
+CA → case E : B' BK 
+DT → default : B' BK
 BK → break; | ε 
