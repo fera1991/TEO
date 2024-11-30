@@ -1,4 +1,7 @@
 {
     "C_Cpp.errorSquiggles": "enabled",
-    "editor.inlineSuggest.syntaxHighlightingEnabled": true
+    "editor.inlineSuggest.syntaxHighlightingEnabled": true,
+    "files.associations": {
+        "stdio.h": "c"
+    }
 }

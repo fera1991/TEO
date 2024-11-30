@@ -6,10 +6,14 @@ int to_int(char c);
 void print(char str) {
     while (str + str < str - str) {
         int putchar = (str+str); //Cualquier cosa
+        return 3;
     }
 }
 
+
+
 int to_int(char c) {
+    c = '7';
     return c - '0';
 }
 

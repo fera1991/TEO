@@ -122,7 +122,56 @@ class LL1Generator():
 
         return self.tabla_ll1
     
-    def filtrar_producciones(self,P):
+    def generar_conjunto_sinc(self, P, doPrint=False):
+        # Inicializar conjuntos FIRST y FOLLOW
+        self.First = defaultdict(lambda: None)
+        self.Follow = defaultdict(lambda: None)
+
+        # Filtrar producciones (sin anotaciones semánticas)
+        P_filtered = self.filtrar_producciones(P) 
+
+        # Calcular FIRST para todos los símbolos
+        first_sets = defaultdict(set)
+        for symbol in list(P_filtered.keys()) + list(TokenEnum):
+            first_sets[symbol] = self.calcular_first(symbol, P_filtered, set())
+
+        # Calcular FOLLOW para todos los no terminales
+        follow_sets = defaultdict(set)
+        for non_terminal in P_filtered:
+            self.calcular_follow(non_terminal, P_filtered, follow_sets, NonTerminalEnum.S)
+
+        # Calcular el conjunto SINC
+        sinc_sets = defaultdict(set)
+        for nt, productions in P_filtered.items():
+            for production in productions:
+                if not production:  # Producción epsilon
+                    sinc_sets[nt].update(follow_sets[nt])
+                else:
+                    first_symbols = set()
+                    for symbol in production:
+                        if isinstance(symbol, NonTerminalEnum):  # Si es un No Terminal
+                            first_symbols.update(first_sets[symbol])
+                            if "" not in first_sets[symbol]:  # Detenerse si epsilon no está en FIRST
+                                break
+                        elif isinstance(symbol, TokenEnum):  # Si es un Terminal
+                            first_symbols.add(symbol)
+                            break
+                    else:
+                        # Si todos los símbolos producen epsilon
+                        first_symbols.update(follow_sets[nt])
+
+                    sinc_sets[nt].update(first_symbols)
+
+        # Mostrar el conjunto SINC si se solicita
+        if doPrint:
+            for nt in NonTerminalEnum:
+                if sinc_sets[nt]:
+                    print(f"SINC de {nt.name}: {self.stringTer(sinc_sets[nt])}")
+            print()
+
+        return sinc_sets
+
+    def filtrar_producciones(self, P):
         nueva_P = defaultdict(list)
         
         for no_terminal, producciones in P.items():
