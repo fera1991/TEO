@@ -1,7 +1,7 @@
 from collections import defaultdict
 from NonTerminalEnum import NonTerminalEnum
 from TokenEnum import TokenEnum
-from semanticAction import ActionEnum
+from semanticAction import actionEnum
 
 class LL1Generator():
 
@@ -25,7 +25,7 @@ class LL1Generator():
         for e in p:
             if isinstance(e, TokenEnum):
                 s += e.value
-            elif isinstance(e, ActionEnum):
+            elif isinstance(e, actionEnum):
                 s += "#" + e.name
             else:
                 s += e.name

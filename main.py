@@ -264,8 +264,9 @@ def main():
     miParser(lexer, symbol_table)
 
     if errores: 
-        print("Errores detectados en la cadena:") 
-        for error in errores: 
+        print("Errores detectados en la cadena:")
+        errores_ordenados = sorted(errores, key=lambda e: int(e.split("línea")[1].split(",")[0].strip())) 
+        for error in errores_ordenados: 
             print(error)
 
     print(len(codeString))
