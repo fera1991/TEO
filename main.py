@@ -116,6 +116,9 @@ stack = [T.EOF, NT.S]
 generator = LL1Generator()
 tabla_ll1 = generator.generar_tabla(P, True)
 
+errores = set()
+from sync_sets import sync_sets
+
 def miParser(lexer: Lexer, symbol_table: SymbolTable):
     
     tok: TokenInfo = lexer.tokenInfo()
@@ -126,9 +129,10 @@ def miParser(lexer: Lexer, symbol_table: SymbolTable):
 
     while True:    
         if x == tok.get_token() and x == T.EOF:
-            print("Cadena reconocida exitosamente")
-            generar_arbol_sintactico(raiz)  # Generar y guardar el árbol sintáctico
-            return #aceptar
+            if not errores: 
+                print("Cadena reconocida exitosamente") 
+                generar_arbol_sintactico(raiz) 
+            return
         else:
             if x == tok.get_token() and x != T.EOF:
                 stack.pop()
@@ -136,31 +140,71 @@ def miParser(lexer: Lexer, symbol_table: SymbolTable):
                 x=stack[-1]
                 tok=lexer.tokenInfo()             
             if isinstance(x, TokenEnum) and x != tok.get_token():
-                print("Error: se esperaba ", tok.get_token())
-                print("En Linea:", tok.get_line())
-                print("En posición:", tok.get_initial_position())
-                return 0;
+                error_msg = f"Error: se esperaba {x.name} en línea {tok.get_line()}, posición {tok.get_initial_position()}" 
+                if error_msg not in errores:
+                    errores.add(error_msg)
+                    #print(error_msg) 
+
+                sync_set = sync_sets
+                #print(f"Iniciando Modo Pánico para TokenEnum {x.name}. Conjunto de sincronización: {[t.name for t in sync_set]}")
+
+                while tok.get_token() not in sync_set and tok.get_token() != T.EOF:
+                    #print(f"Descartando token '{tok.get_token().value}' (token: {tok.get_token().name}) en línea {tok.get_line()}, posición {tok.get_initial_position()}")
+                    tok = lexer.tokenInfo()
+
+                if tok.get_token() in sync_set:
+                    #print(f"Recuperado en el token '{tok.get_token().value}' (token: {tok.get_token().name}) en línea {tok.get_line()}, posición {tok.get_initial_position()}")
+                    if stack:
+                        stack.pop()
+                        x = stack[-1] if stack else None
+                    else:
+                        print("Pila vacía durante la recuperación. Terminando análisis.")
+                        return 0  # Salir del análisis si la pila está vacía
+                else:
+                    #print("No se pudo recuperar. Fin del análisis.")
+                    return 0
+                continue
+
             if not isinstance(x, TokenEnum): #es no terminal
-                print("van entrar a la tabla:")
-                print(string_celda(x))
-                print(tok.get_token().value)
+                #print("van entrar a la tabla:")
+                #print(string_celda(x))
+                #print(tok.get_token().value)
                 celda=buscar_en_tabla(x,tok.get_token())                            
                 if  celda is None:
                     if tok.get_token() == TokenEnum.INVALID_TOKEN:
-                        print("Error: Token desconocido: ", tok.get_value())
-                        print("En Linea:", tok.get_line())
-                        print("En posición:", tok.get_initial_position())
+                        error_msg = f"Error: Token desconocido {tok.get_value()} en línea {tok.get_line()}, posición {tok.get_initial_position()}"  
+                        if error_msg not in errores:
+                            errores.add(error_msg)
                     else:
-                        print("Error: NO se esperaba", tok.get_token().name)
-                        print("En Linea:", tok.get_line())
-                        print("En posición:", tok.get_initial_position())
-                    
-                    return 0;
+                        error_msg = f"Error: NO se esperaba {tok.get_token().name} en línea {tok.get_line()}, posición {tok.get_initial_position()}" 
+                        if error_msg not in errores:
+                            errores.add(error_msg)
+                    #print(error_msg)
+
+                    sync_set = sync_sets
+                    #print(f"Iniciando Modo Pánico para NonTerminalEnum {x.name}. Conjunto de sincronización: {[t.name for t in sync_set]}")
+
+                    while tok.get_token() not in sync_set and tok.get_token() != T.EOF:
+                        #print(f"Descartando token '{tok.get_token().value}' (token: {tok.get_token().name}) en línea {tok.get_line()}, posición {tok.get_initial_position()}")
+                        tok = lexer.tokenInfo()
+
+                    if tok.get_token() in sync_set:
+                        #print(f"Recuperado en el token '{tok.get_token().value}' (token: {tok.get_token().name}) en línea {tok.get_line()}, posición {tok.get_initial_position()}")
+                        if stack:
+                            stack.pop()
+                            x = stack[-1] if stack else None
+                        else:
+                            print("Pila vacía durante la recuperación. Terminando análisis.")
+                            return 0  # Salir del análisis si la pila está vacía
+                    else:
+                        #print("No se pudo recuperar. Fin del análisis.")
+                        return 0
+                    continue
                 else:
                     stack.pop()
                     agregar_pila(celda)
-                    print_stack()
-                    print("------------")
+                    #print_stack()
+                    #print("------------")
                     x=stack[-1]
 
                     # Agregar nodos hijos al árbol sintáctico
@@ -171,6 +215,7 @@ def miParser(lexer: Lexer, symbol_table: SymbolTable):
                         nodo_actual.agregar_hijo(nuevo_nodo)  # Agregamos cada nuevo nodo al nodo actual
                         nuevos_nodos.append(nuevo_nodo)
                     nodos_pila.extend(reversed(nuevos_nodos))  # Agregamos nuevos nodos a la pila paralela en orden correcto      
+    
 
 def string_celda(c):
     return c.value if isinstance(c, TokenEnum) else c.name
@@ -217,6 +262,11 @@ def main():
     symbol_table.print_symbol_table()
 
     miParser(lexer, symbol_table)
+
+    if errores: 
+        print("Errores detectados en la cadena:") 
+        for error in errores: 
+            print(error)
 
     print(len(codeString))
 
