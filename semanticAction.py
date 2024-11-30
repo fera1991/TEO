@@ -66,6 +66,7 @@ class SemanticAction():
         self.insideSwitch = False
         self.returnStack: list = []
         self.modoSeguro = False
+        self.errores = False
         self.semanticStack: list = ["Stack's bottom"]
         self.expHandler = ExpressionHandler(self.symbolTable, self.semanticStack, self.scopeStack, self.error)
     
@@ -80,7 +81,7 @@ class SemanticAction():
         else:
             line = token.line
             position = token.initial_position
-        
+        self.errores = True
         print("Error semantico en linea: ", line,", posición: ",position)
         print(msg)
 
